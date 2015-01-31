@@ -95,6 +95,11 @@ class main {
 		$ajax_action = 'wp_ajax_'.$params[ 'ajax_action' ];
 		add_action( $ajax_action, array( $this, 'update' ) );
 		add_action( 'admin_init', array( $this, 'register_license_key_option' ) );
+
+		// init the EDD updater class
+		if( is_admin() ){
+			$this->updater_class();
+		}
 	}
 
 	/**
@@ -112,10 +117,11 @@ class main {
 
 		$license_key = trim( get_option( $this->params[ 'license_key_option_name' ] ) );
 
-		$edd_updater = new EDD_SL_Plugin_Updater( $this->params[ 'store_url' ], $this->params[ 'plugin_root_file' ], array(
+		$edd_updater = new \EDD_SL_Plugin_Updater( $this->params[ 'store_url' ], $this->params[ 'plugin_root_file' ], array(
 				'version' 	=> $this->params[ 'version' ],
 				'license' 	=> $license_key,
-				'item_name' => $this->params[ 'author' ],
+				'item_name' => $this->params[ 'item_name' ],
+				'author' 	=> $this->params[ 'author' ],
 			)
 
 		);
