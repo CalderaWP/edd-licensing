@@ -188,8 +188,9 @@ class main {
 	protected function activate_license( $license = false ) {
 		$response = $this->api_request( 'activate_license', $license );
 
-		if ( is_wp_error( $response ) ) {
+		if ( false == $response || is_wp_error( $response ) ) {
 			return false;
+
 		}
 
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
@@ -220,8 +221,9 @@ class main {
 	protected function deactivate_license( $license = false ) {
 		$response = $this->api_request( 'deactivate_license', $license );
 
-		if ( is_wp_error( $response ) ) {
+		if ( false == $response || is_wp_error( $response ) ) {
 			return false;
+
 		}
 
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
@@ -290,7 +292,7 @@ class main {
 
 		$response = $this->api_request( 'check_license', $license );
 
-		if ( is_wp_error( $response ) ) {
+		if ( false == $response || is_wp_error( $response ) ) {
 			return false;
 
 		}
@@ -314,13 +316,13 @@ class main {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $edd_action Action to take on remote server activate|deactivate|check_license
+	 * @param string $edd_action Action to take on remote server activate_license|deactivate_license|check_license
 	 * @param string|bool $license Optional. The license code. If false, will get from DB.
 	 *
 	 * @return array|\WP_Error
 	 */
 	protected function api_request( $edd_action, $license = false ) {
-		if ( ! in_array( $edd_action, array( 'activate', 'deactivate', 'check_license' ) ) )  {
+		if ( ! in_array( $edd_action, array( 'activate_license', 'deactivate_license', 'check_license' ) ) )  {
 			return false;
 		}
 
