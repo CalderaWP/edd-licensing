@@ -114,6 +114,7 @@ class output {
 		$atts[ 'code' ] = 'false';
 		$atts[ $this->main_licensing_class->nonce_field ] = 'false';
 		$atts[ 'license_action' ] = $license_action;
+		$atts[ 'action' ] = $this->main_licensing_class->ajax_action;
 
 		foreach( $atts as $att => $value ) {
 			if ( is_string( $value ) ) {
@@ -127,8 +128,8 @@ class output {
 		return sprintf( '%1s<input type="submit" id="code-submit" class="wp-baldrick add-new-h2"  %2s value="%4s"/>',
 			$nonce_field,
 			esc_attr( $atts_html ),
-			ucfirst( $value ) );
-
+			ucfirst( $value )
+		);
 
 	}
 

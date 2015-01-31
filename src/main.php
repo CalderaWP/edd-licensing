@@ -88,6 +88,7 @@ class main {
 		$this->params = $params;
 		$this->nonce_action = $this->params[ 'nonce_action' ];
 		$this->nonce_field = $this->params[ 'nonce_field' ];
+		$this->ajax_action = $this->params[ 'ajax_action' ];
 		$this->license_key_option_name = $this->params[ 'license_key_option_name' ];
 		$this->license_status_option_name = $this->params[ 'license_status_option_name' ];
 
