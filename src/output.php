@@ -81,7 +81,7 @@ class output {
 	 *
 	 * @return string Button HTML
 	 */
-	public function submit_button() {
+	public function submit_button($class_name = 'add-new-h2') {
 
 		if ( ! $this->is_license_valid() ) {
 			$license_action = 'activate';
@@ -91,7 +91,7 @@ class output {
 			$value = __( 'Deactivate License', 'easy-pods' );
 		}
 
-		return $this->button_html( $license_action, $value );
+		return $this->button_html( $license_action, $value, $class_name );
 
 
 	}
@@ -108,7 +108,7 @@ class output {
 	 *
 	 * @return string Button HTML
 	 */
-	protected function button_html( $license_action, $value ) {
+	protected function button_html( $license_action, $button_value, $class_name ) {
 		$nonce_field = $this->nonce_field();
 		$atts = $this->button_baldrick;
 		$atts[ 'code' ] = 'false';
@@ -125,10 +125,11 @@ class output {
 		$atts_html = implode( ' ', $atts_html );
 
 
-		return sprintf( '%1s<input type="submit" id="code-submit" class="wp-baldrick add-new-h2"  %2s value="%4s"/>',
+		return sprintf( '%1s<input type="submit" id="code-submit" class="wp-baldrick %2s"  %3s value="%4s"/>',
 			$nonce_field,
-			esc_attr( $atts_html ),
-			ucfirst( $value )
+			esc_attr( $class_name ),
+			esc_attr( $atts_html ),			
+			ucfirst( $button_value )
 		);
 
 	}
