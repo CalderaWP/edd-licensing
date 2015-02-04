@@ -75,24 +75,26 @@ class main {
 	 *      @type string version Plugin version.
 	 *      @type string item_name The plugin's name.
 	 *      @type string author The plugin's author.
-	 *      @type string license_key_option_name The name of the option that stores the license key.
-	 *      @type string license_status_option_name The name of the option that stores the license status.
-	 *      @type string plugin_root_file The file path for the file containing the plugin header.
-	 *      @type string ajax_action The AJAX action used for processing license codes.
-	 *      @type string nonce_field The field containing the nonce when processing license codes.
-	 *      @type string nonce_action The name of the action for the nonce.
+	 *      @type string prefix Optional. If used none of the other keys after this are needed, and will be generated automatically using the prefix.
+	 *      @type string license_key_option_name Optional, if prefix set. The name of the option that stores the license key.
+	 *      @type string license_status_option_name Optional, if prefix set.The name of the option that stores the license status.
+	 *      @type string plugin_root_file Optional, if prefix set.The file path for the file containing the plugin header.
+	 *      @type string ajax_action Optional, if prefix set.The AJAX action used for processing license codes.
+	 *      @type string nonce_field Optional, if prefix set.The field containing the nonce when processing license codes.
+	 *      @type string nonce_action Optional, if prefix set. The name of the action for the nonce.
 	 *
 	 * }
 	 */
 	function __construct( $params ) {
-		$this->params = $params;
+		$this->params = $params = array_merge( $params, $this->prefix_the_keys( $params ) );
+
 		$this->nonce_action = $this->params[ 'nonce_action' ];
 		$this->nonce_field = $this->params[ 'nonce_field' ];
 		$this->ajax_action = $this->params[ 'ajax_action' ];
 		$this->license_key_option_name = $this->params[ 'license_key_option_name' ];
 		$this->license_status_option_name = $this->params[ 'license_status_option_name' ];
 
-		$ajax_action = 'wp_ajax_'.$params[ 'ajax_action' ];
+		$ajax_action = 'wp_ajax_' . $this->ajax_action;
 		add_action( $ajax_action, array( $this, 'update' ) );
 		add_action( 'admin_init', array( $this, 'register_license_key_option' ) );
 
@@ -100,6 +102,54 @@ class main {
 		if( is_admin() ){
 			$this->updater_class();
 		}
+
+	}
+
+	/**
+	 * If $this->params[ 'prefix' ] isset, then for any of the params defined in $this->keys() set those values dynamically.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @access protected
+	 */
+	protected function prefix_the_keys( $params ) {
+
+		if ( isset( $params[ 'prefix' ] ) ) {
+			$prefix = $params[ 'prefix' ];
+			if ( '_' != substr( $prefix, -1 ) ) {
+				$prefix = $prefix . '_';
+			}
+
+			foreach ( $this->keys() as $key => $unprefixed ) {
+				if ( ! isset( $this->params[ $key ] ) ) {
+					$params[ $key ] = $prefix . $unprefixed;
+				}
+
+			}
+
+		}
+
+		return $params;
+
+	}
+
+	/**
+	 * $this->params[] Keys to automatically set the value from.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @access protected
+	 *
+	 * @return array
+	 */
+	protected function keys() {
+		return array(
+			'license_key_option_name' => 'license_key',
+			'license_status_option_name' => 'license_key_status',
+			'ajax_action' => 'save_license',
+			'nonce_field'  => 'license_nonce',
+			'nonce_action' => 'license_nonce',
+		);
 	}
 
 	/**
@@ -109,7 +159,7 @@ class main {
 	 *
 	 * @access protected
 	 */
-	protected function updater_class(  ) {
+	protected function updater_class() {
 		if( ! class_exists( 'EDD_SL_Plugin_Updater' ) ) {
 
 			include( dirname( __FILE__ ) . '/includes/EDD_SL_Plugin_Updater.php' );
