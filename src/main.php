@@ -197,8 +197,8 @@ class main {
 			wp_send_json_error( $error_response );
 		}
 
-		if ( isset( $data[ 'code'] ) ) {
-			$code = $data[ 'code' ];
+		if ( isset( $data[ 'code'] ) ) {			
+			$error_response['key'] = $code = $data[ 'code' ];
 			if ( isset( $data[ 'license_action' ] ) ) {
 				if ( 'activate' === $data[ 'license_action' ]  ) {
 					$license_data = $this->activate_license( $code );
@@ -209,6 +209,8 @@ class main {
 
 			nocache_headers();
 			if ( is_object( $license_data ) ) {
+				// add code to object 
+				$license_data->key = $code;
 
 				if ( isset( $license_data->success ) && $license_data->success ) {
 					$license_data = (array) $license_data;
