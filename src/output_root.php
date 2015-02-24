@@ -16,16 +16,28 @@ abstract class output_root  {
 	/**
 	 * Object of the main licensing class
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @var \calderawp\licensing\main|object
 	 */
 	public $main_licensing_class;
 
 	/**
+	 * Constructor for this class.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param \calderawp\licensing\main|object $main_licensing_class The related instance of the main licensing class.
+	 */
+	function __construct( $main_licensing_class  ) {
+		$this->button_baldrick = $button_baldrick;
+
+	}
+
+	/**
 	 * Get current, saved license code.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @return string|bool The code or false if not set.
 	 */
@@ -39,7 +51,7 @@ abstract class output_root  {
 	/**
 	 * Get status of license code
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @return string|bool Status of code
 	 */
@@ -52,7 +64,7 @@ abstract class output_root  {
 	/**
 	 * Check if the stored license is valid.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @return bool
 	 */
@@ -69,7 +81,7 @@ abstract class output_root  {
 	/**
 	 * Create a nonce field.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @return string Form field HTML
 	 */
@@ -79,4 +91,6 @@ abstract class output_root  {
 		return $nonce_field;
 
 	}
+
+
 }

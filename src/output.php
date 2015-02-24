@@ -38,11 +38,10 @@ class output extends output_root {
 		$this->main_licensing_class = $main_licensing_class;
 	}
 
-
 	/**
-	 * Output a BaldrickJS submit button for the activate/deactivate action
+	 * Output a submit button for the activate/deactivate action
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 *
 	 * @return string Button HTML
 	 */
