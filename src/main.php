@@ -425,7 +425,7 @@ class main {
 		$license = trim( $license );
 
 		// check for foo
-		if( 'cwp-' !== strtolower( substr( $license, 0, 4 ) ) ){
+		if( !empty( $this->params['foo_url'] ) && 'cwp-' !== strtolower( substr( $license, 0, 4 ) ) ){
 			if( $edd_action === 'deactivate_license'){
 				return 'foo_detach';
 			}
