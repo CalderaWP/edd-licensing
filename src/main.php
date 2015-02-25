@@ -275,10 +275,12 @@ class main {
 		}else{
 
 			if( ( isset( $license_data->response ) && false === $license_data->response->valid ) ){
-				return $license_data->response;
-			}
+				$license_data->success = false;
+				$license_data->message = $license_data->response->message;
+			}else{
 
-			return false;
+				return false;
+			}
 
 		}
 
@@ -439,7 +441,6 @@ class main {
 				'timeout' => 45,
 				'user-agent' => 'WordPress/' . $wp_version . '; FooLicensing'
 			);
-
 			$response = wp_remote_post( $this->params[ 'foo_url' ], $api_params );
 
 			return $response;
