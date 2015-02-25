@@ -160,10 +160,13 @@ class main {
 	 * @access protected
 	 */
 	protected function updater_class() {
+		
 		if( ! class_exists( 'EDD_SL_Plugin_Updater' ) ) {
 
 			include( dirname( __FILE__ ) . '/includes/EDD_SL_Plugin_Updater.php' );
 		}
+ 		
+ 		include( dirname( __FILE__ ) . '/includes/FOO_license_update.php' );
 
 		$license_key = trim( get_option( $this->params[ 'license_key_option_name' ] ) );
 
@@ -175,6 +178,16 @@ class main {
 			)
 
 		);
+
+		//initialize plugin update checks with fooplugins.com
+		if( !empty( $this->params['foo_url'] ) ){
+			new \foolic_update_checker_v1_5(
+				basename( $this->params['plugin_root_file'] ), //the plugin file
+				$this->params['foo_url'], //the URL to check for updates
+				$this->params['item_slug'], //the plugin slug
+				$license_key //the stored license key
+			);
+		}
 
 	}
 
@@ -253,11 +266,18 @@ class main {
 		}
 
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
-
-		if ( isset( $license_data->success ) && $license_data->success ) {
+		if ( ( isset( $license_data->success ) && $license_data->success ) || ( isset( $license_data->response ) && false !== $license_data->response->valid ) ) {			
 			update_option( $this->params['license_key_option_name'], $license );
 			update_option( $this->params['license_status_option_name'], true );
+			if( isset( $license_data->response ) ){
+				$license_data->success = true;
+			}			
 		}else{
+
+			if( ( isset( $license_data->response ) && false === $license_data->response->valid ) ){
+				return $license_data->response;
+			}
+
 			return false;
 
 		}
@@ -283,6 +303,17 @@ class main {
 		if ( false == $response || is_wp_error( $response ) ) {
 			return false;
 
+		}
+
+		// is foo detach?
+		if( $response === 'foo_detach' ){
+			$license_data = new \stdClass;
+			$license_data->foo_detatch = true;
+			$license_data->license = 'deactivated';
+			delete_option( $this->params[ 'license_key_option_name' ] );
+			delete_option( $this->params[ 'license_status_option_name' ] );
+
+			return $license_data;
 		}
 
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
@@ -381,6 +412,8 @@ class main {
 	 * @return array|\WP_Error
 	 */
 	protected function api_request( $edd_action, $license = false ) {
+		global $wp_version;
+
 		if ( ! in_array( $edd_action, array( 'activate_license', 'deactivate_license', 'check_license' ) ) )  {
 			return false;
 		}
@@ -391,6 +424,27 @@ class main {
 
 		$license = trim( $license );
 
+		// check for foo
+		if( 'cwp-' !== strtolower( substr( $license, 0, 4 ) ) ){
+			if( $edd_action === 'deactivate_license'){
+				return 'foo_detach';
+			}
+			// prepare the foo!
+			$api_params = array(
+				'body'       => array(
+					'action'  => 'validate',
+					'license' => $license,
+					'site'    => home_url()
+				),
+				'timeout' => 45,
+				'user-agent' => 'WordPress/' . $wp_version . '; FooLicensing'
+			);
+
+			$response = wp_remote_post( $this->params[ 'foo_url' ], $api_params );
+
+			return $response;
+
+		}
 
 		$api_params = array(
 			'edd_action'=> $edd_action,
