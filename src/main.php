@@ -181,8 +181,8 @@ class main {
 
 		//initialize plugin update checks with fooplugins.com
 		if( !empty( $this->params['foo_url'] ) ){
-			new \foolic_update_checker_v1_5(
-				basename( $this->params['plugin_root_file'] ), //the plugin file
+			$edd_updater = new \foolic_update_checker_v1_5(
+				$this->params['plugin_root_file'], //the plugin file
 				$this->params['foo_url'], //the URL to check for updates
 				$this->params['item_slug'], //the plugin slug
 				$license_key //the stored license key
